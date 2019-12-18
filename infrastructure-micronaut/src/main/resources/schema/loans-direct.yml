@@ -1,0 +1,200 @@
+databaseChangeLog:
+- property:
+    name: json
+    value: clob
+    dbms: h2
+- property:
+    name: json
+    value: jsonb
+    dbms: postgresql
+
+- changeSet:
+    id: 0.postgres.json
+    author: Michal Michaluk
+    dbms: postgresql
+    failOnError: false
+    changes:
+    - sql: CREATE CAST (VARCHAR AS JSONB) WITH INOUT AS ASSIGNMENT
+    rollback:
+    - sql: DROP CAST (VARCHAR AS JSONB)
+
+- changeSet:
+    id: 1.schema
+    author: Michal Michaluk
+
+    changes:
+    - sql: CREATE SCHEMA loans_direct
+    rolback:
+    - sql: DROP SCHEMA loans_direct
+
+- changeSet:
+    id: 2.loans_direct.events
+    author: Michal Michaluk
+
+    changes:
+    - createTable:
+        schemaName: loans_direct
+        tableName: events
+        columns:
+        - column:
+            name: id
+            type: serial
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: events_pkey
+        - column:
+            name: emitted
+            type: timestamp
+            constraints:
+              nullable: false
+        - column:
+            name: object_id
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: type
+            type: varchar(128)
+            constraints:
+              nullable: true
+        - column:
+            name: payload
+            type: ${json}
+            constraints:
+              nullable: false
+    - createIndex:
+        schemaName: loans_direct
+        tableName: events
+        indexName: events_types
+        unique: false
+        columns:
+        - column:
+            name: object_id
+        - column:
+            name: type
+
+    - createTable:
+        schemaName: loans_direct
+        tableName: offers
+        columns:
+        - column:
+            name: object_id
+            type: serial
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: offers_pkey
+        - column:
+            name: version
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user1
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user2
+            type: bigint
+            constraints:
+              nullable: false
+    - createIndex:
+        schemaName: loans_direct
+        tableName: offers
+        indexName: offers_users
+        unique: false
+        columns:
+        - column:
+            name: user1
+        - column:
+            name: user2
+    - createIndex:
+        schemaName: loans_direct
+        tableName: offers
+        indexName: offers_user2
+        unique: false
+        columns:
+        - column:
+            name: user2
+
+    - createTable:
+        schemaName: loans_direct
+        tableName: accounts
+        columns:
+        - column:
+            name: object_id
+            type: serial
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: accounts_pkey
+        - column:
+            name: version
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user1
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user2
+            type: bigint
+            constraints:
+              nullable: false
+    - createIndex:
+        schemaName: loans_direct
+        tableName: accounts
+        indexName: accounts_users
+        unique: true
+        columns:
+        - column:
+            name: user1
+        - column:
+            name: user2
+    - createIndex:
+        schemaName: loans_direct
+        tableName: accounts
+        indexName: accounts_user2
+        unique: false
+        columns:
+        - column:
+            name: user2
+
+    - createTable:
+        schemaName: loans_direct
+        tableName: entrypoint
+        columns:
+        - column:
+            name: object_id
+            type: serial
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: entrypoint_pkey
+        - column:
+            name: version
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: balances
+            type: ${json}
+            constraints:
+              nullable: false
+    - createIndex:
+        schemaName: loans_direct
+        tableName: entrypoint
+        indexName: entrypoint_user
+        unique: true
+        columns:
+        - column:
+            name: user

@@ -1,2 +1,3 @@
 rootProject.name = 'loans-direct'
 include 'domain-model'
+include 'infrastructure-micronaut'

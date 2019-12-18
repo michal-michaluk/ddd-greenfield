@@ -1,0 +1,28 @@
+---
+micronaut:
+  application:
+    name: loans-direct
+
+---
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/postgres
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+
+liquibase:
+  datasources:
+    default:
+      change-log: 'classpath:schema/db.changelog.yml'
+
+---
+jackson:
+  serializationInclusion: ALWAYS
+  bean-introspection-module: true
+  module-scan: true
+  serialization:
+    indentOutput: false
+    writeDatesAsTimestamps: false
+  deserialization:
+    failOnUnknownProperties: false

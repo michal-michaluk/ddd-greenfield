@@ -1,0 +1,4 @@
+databaseChangeLog:
+- include:
+    file: loans-direct.yml
+    relativeToChangelogFile: true

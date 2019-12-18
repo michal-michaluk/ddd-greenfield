@@ -1,0 +1,2 @@
+
+docker exec -ti loans-direct_postgres_1 psql -U postgres
